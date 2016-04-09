@@ -6,21 +6,39 @@ from multiprocessing import Process
 input_file = sys.argv[1] if len(sys.argv) > 1 else 'b_sample.in'
 decimal_digits = set(str(i) for i in range(0, 10))
 
-def count_sheep(initial_number):
-    seen_digits = set(str(initial_number))
-    i = 0
-    while seen_digits != decimal_digits:
-        latest_number = str(initial_number * (i+1))
-        for char in set(latest_number):
-            seen_digits.add(char)
-        i += 1
-    return latest_number
+def flip_at_index(string, index):
+    for i in xrange(0, index):
+        if string[i] is '-':
+            string[i] = '+'
+        else:
+            string[i] = '-'
+    return ''.join(string)
 
-def parallel_sheep(test, initial_number):
-    if initial_number is 0:
-        print "Case #{}: {}".format(test+1, 'INSOMNIA')
+
+def fix_pancakes(stack_string):
+    flips = 0
+    while stack_string != len(stack_string) * '+':
+        if stack_string[0] is '+' and stack_string[-1] is '-':
+            stack_string = stack_string[::-1]
+            flips += 1
+        elif stack_string[0] is '+':
+            stack_string = flip_at_index(list(stack_string), stack_string.index('-'))
+            flips += 1
+        else:
+            stack_string = flip_at_index(list(stack_string), stack_string.index('+'))
+            flips += 1
+
+    return flips
+
+
+def parallel_pancakes(test, stack_string):
+    if stack_string == len(stack_string) * '+':
+        print "Case #{}: {}".format(test+1, 0)
+    elif stack_string == len(stack_string) * '-':
+        print "Case #{}: {}".format(test+1, 1)
     else:
-        print "Case #{}: {}".format(test+1, count_sheep(initial_number))
+        fix_pancakes(stack_string)
+        print "Case #{}: {}".format(test+1, fix_pancakes(stack_string))
 
 
 with open(input_file, 'r') as f:
@@ -28,8 +46,8 @@ with open(input_file, 'r') as f:
     assert(1<=test_cases<=100)
 
     for test in xrange(0, test_cases):
-        N = int(f.readline().rstrip('\n'))
-        build_sheeps = Process(target=parallel_sheep(test, N))
-        build_sheeps.start()
+        S = f.readline().rstrip('\n')
+        flip_pancakes = Process(target=parallel_pancakes(test, S))
+        flip_pancakes.start()
 
 f.close()
