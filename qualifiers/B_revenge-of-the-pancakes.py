@@ -3,7 +3,7 @@
 import sys
 from multiprocessing import Process
 
-input_file = sys.argv[1] if len(sys.argv) > 1 else 'a_sample.in'
+input_file = sys.argv[1] if len(sys.argv) > 1 else 'b_sample.in'
 decimal_digits = set(str(i) for i in range(0, 10))
 
 def count_sheep(initial_number):
@@ -25,7 +25,7 @@ def parallel_sheep(test, initial_number):
 
 with open(input_file, 'r') as f:
     test_cases = int(f.readline())
-    assert(0<=test_cases<=1000000)
+    assert(1<=test_cases<=100)
 
     for test in xrange(0, test_cases):
         N = int(f.readline().rstrip('\n'))
